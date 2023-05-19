@@ -1,0 +1,66 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.12'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id "org.openapi.generator" version "5.4.0"
+}
+
+group = 'com.caesar.cipher'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+	implementation 'org.openapitools:openapi-generator:3.3.4'
+	implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.18.0'
+	implementation 'org.owasp.esapi:esapi:2.2.2.0'
+
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+openApiValidate {
+	inputSpec = "$rootDir/src/main/resources/api.yaml".toString()
+	recommend = true
+}
+
+openApiGenerate {
+	generatorName = "spring"
+	inputSpec = "$rootDir/src/main/resources/api.yaml".toString()
+	outputDir = "$buildDir/generated".toString()
+	apiPackage = "com.caesar.cipher.caesarcipher.openapi"
+	modelPackage = "com.caesar.cipher.caesarcipher.openapi.model"
+	configOptions = [
+			dateLibrary: "java11",
+			interfaceOnly: "true",
+			implicitHeaders: "true",
+			additionalModelTypeAnnotations: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
+	]
+	compileJava.dependsOn 'openApiGenerate', 'processResources'
+	sourceSets.main.java.srcDirs 'build/generated/src/main/java'
+	sourceSets.main.java.srcDirs 'src/main/java'
+
+}
