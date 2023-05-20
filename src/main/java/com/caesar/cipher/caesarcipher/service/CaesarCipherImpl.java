@@ -2,15 +2,27 @@ package com.caesar.cipher.caesarcipher.service;
 
 import com.caesar.cipher.caesarcipher.crosscutting.Constant;
 import com.caesar.cipher.caesarcipher.crosscutting.ConstantPath;
+import com.caesar.cipher.caesarcipher.crosscutting.EntityToModel;
 import com.caesar.cipher.caesarcipher.entities.MessageEntity;
+import com.caesar.cipher.caesarcipher.openapi.model.CaesarCipher;
 import com.caesar.cipher.caesarcipher.openapi.model.SendResponseCaesarCipher;
+import com.caesar.cipher.caesarcipher.openapi.model.SendResponseCaesarCipherList;
 import com.caesar.cipher.caesarcipher.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.owasp.esapi.logging.cleaning.NewlineLogScrubber;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,7 +33,7 @@ public class CaesarCipherImpl implements ICaesarCipher {
     private final MessageRepository messageRepository;
 
     @Override
-    public SendResponseCaesarCipher CaesarCipherText(String text, Integer rotationFactor) {
+    public ResponseEntity<SendResponseCaesarCipher> caesarCipherText(String text, Integer rotationFactor) {
         log.info(logClean.cleanMessage(String.format("Entered /".concat(ConstantPath.CAESAR_CIPHER_PATH).concat("CaesarCipherText in CaesarCipherImpl"))));
         String messageCipher = caesarCipherAlgorithm(text,rotationFactor);
         MessageEntity messageEntity = new MessageEntity();
@@ -29,8 +41,26 @@ public class CaesarCipherImpl implements ICaesarCipher {
         messageEntity.setMessageCipher(messageCipher);
         messageEntity.setRotationFactor(rotationFactor);
         saveMessage(messageEntity);
-        return SendResponseCaesarCipher.builder().text(messageCipher).build();
+        return ResponseEntity.ok(SendResponseCaesarCipher.builder().text(messageCipher).build());
     }
+
+    @Override
+    public ResponseEntity<SendResponseCaesarCipherList> caesarCipherList(Integer page, Integer size) {
+        page = page -1;
+        Pageable pageable = PageRequest.of(Objects.nonNull(page) ? page : 0 , size, Sort.by(Constant.SORT_LIST).ascending());
+        Page<MessageEntity> response = messageRepository.findAll(pageable);
+        if(response.isEmpty()) {
+            throw new NoResultException(Constant.MESSAGE_ERROR_NO_CONTENT_EXCEPTION);
+        }
+
+        return ResponseEntity.ok(SendResponseCaesarCipherList
+                .builder()
+                .caesarCipher(response.getContent().stream().map(EntityToModel::toModel).collect(Collectors.toList()))
+                .totalElement(Integer.parseInt(String.valueOf(response.getTotalElements())))
+                .totalPage(response.getTotalPages())
+                .build());
+    }
+
     @Transactional
     public void saveMessage(MessageEntity message) {
         messageRepository.save(message);

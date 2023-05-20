@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
@@ -33,17 +34,23 @@ public class GlobalExceptionHandler {
                 .build(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({DataAccessException.class, PersistenceException.class})
+    @ExceptionHandler({DataAccessException.class, PersistenceException.class, NoResultException.class})
     public ResponseEntity<Object> handleDataAccessException(Exception ex, WebRequest request) {
         String errorMessage = ConstantException.ERROR_DATA_BASE.getMessage();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         String code = ConstantException.ERROR_DATA_BASE.getCode();
         if (ex instanceof SQLIntegrityConstraintViolationException) {
-            errorMessage.concat(ConstantException.ERROR_DATA_BASE_RESTRICTION.getMessage());
+            errorMessage += (ConstantException.ERROR_DATA_BASE_RESTRICTION.getMessage());
             code = ConstantException.ERROR_DATA_BASE_RESTRICTION.getCode();
             status = HttpStatus.BAD_REQUEST;
-        } else if (ex instanceof PersistenceException) {
-            errorMessage.concat(ConstantException.ERROR_DATA_BASE_PERSISTENCE.getMessage()) ;
+
+        }else if (ex instanceof  NoResultException){
+            errorMessage += (ConstantException.ERROR_DATA_BASE_PERSISTENCE_NO_CONTENT.getMessage()) ;
+            code = ConstantException.ERROR_DATA_BASE_PERSISTENCE_NO_CONTENT.getCode();
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        } 
+        else if (ex instanceof PersistenceException) {
+            errorMessage += (ConstantException.ERROR_DATA_BASE_PERSISTENCE.getMessage()) ;
             code = ConstantException.ERROR_DATA_BASE_PERSISTENCE.getCode();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
