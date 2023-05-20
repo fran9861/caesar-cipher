@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS message
 (
-    id bigint NOT NULL,
+    id serial,
     message character varying(100) NOT NULL,
     message_cipher character varying(100) NOT NULL,
     rotation_factor int NOT NULL,
