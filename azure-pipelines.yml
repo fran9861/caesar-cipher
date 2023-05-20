@@ -3,12 +3,6 @@
 
 name: Build and deploy JAR app to Azure Web App - CaesarCipher
 
-on:
-  push:
-    branches:
-      - develop
-  workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
