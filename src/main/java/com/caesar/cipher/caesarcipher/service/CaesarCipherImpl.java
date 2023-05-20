@@ -4,7 +4,6 @@ import com.caesar.cipher.caesarcipher.crosscutting.Constant;
 import com.caesar.cipher.caesarcipher.crosscutting.ConstantPath;
 import com.caesar.cipher.caesarcipher.crosscutting.EntityToModel;
 import com.caesar.cipher.caesarcipher.entities.MessageEntity;
-import com.caesar.cipher.caesarcipher.openapi.model.CaesarCipher;
 import com.caesar.cipher.caesarcipher.openapi.model.SendResponseCaesarCipher;
 import com.caesar.cipher.caesarcipher.openapi.model.SendResponseCaesarCipherList;
 import com.caesar.cipher.caesarcipher.repository.MessageRepository;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
