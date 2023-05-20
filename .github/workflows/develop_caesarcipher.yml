@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'CaesarCipher'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CB6E5CE575884B208029BFB470B4AD38 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_008CE4CD560C419C816F2D9D68326A77 }}
           package: '*.jar'
