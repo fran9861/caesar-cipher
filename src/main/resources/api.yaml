@@ -1,0 +1,238 @@
+openapi: 3.0.3
+info:
+  title: Caesar Cipher 1.0
+  description: |-
+    The API Caesar Cipher
+  version: 1.0.0
+  x-template-version: 3.0.0
+  contact:
+    name: Fran Bermudez
+    url: 'https://www.linkedin.com/in/fran-alexander-bermudez-grajales-2bb62a192/'
+    email: alexander98612@gmail.com
+  x-implemented-by:
+    - Colombia
+  license:
+    name: Caesar Cipher
+servers:
+  - url: /api/v1
+paths:
+  /caesar-cipher:
+    post:
+      tags:
+        - 'Caesar Cipher'
+      summary: Caesar Cipher
+      description: Caesar Cipher
+      operationId: Caesar Cipher
+      parameters:
+        - $ref: '#/components/parameters/TraceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendRequestCaesarCipher'
+            examples:
+              ExampleCaesarCipher:
+                $ref: '#/components/examples/SendRequestCaesarCipherExample'
+      responses:
+        '200':
+          description: Create Caesar Cipher
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendResponseCaesarCipher'
+              examples:
+                ResourceResponseExample:
+                  $ref: '#/components/examples/SendResponseCaesarCipherExample'
+        '400':
+          description: Error de solicitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyDataResponse'
+        default:
+          description: Defalt responses.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyDataResponse'
+              examples:
+                ErrorResponse:
+                  $ref: '#/components/examples/EmptyDataResponseExample'
+  /caesar-cipher/list:
+    get:
+      tags:
+        - 'Caesar Cipher'
+      summary: Caesar Cipher
+      description: Caesar Cipher List
+      operationId: Caesar Cipher List
+      parameters:
+        - $ref: '#/components/parameters/TraceId'
+        - name: page
+          in: query
+          description: number poge
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: size
+          in: query
+          description: number poge
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        '200':
+          description: List Caesar Cipher
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sendResponseCaesarCipherList'
+              examples:
+                ResourceResponseExample:
+                  $ref: '#/components/examples/sendResponseCaesarCipherListExample'
+        '400':
+          description: Error de solicitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyDataResponse'
+        default:
+          description: Defalt responses.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyDataResponse'
+              examples:
+                ErrorResponse:
+                  $ref: '#/components/examples/EmptyDataResponseExample'
+components:
+  schemas:
+    SendRequestCaesarCipher:
+      type: object
+      additionalProperties: false
+      required:
+        - text
+        - rotation_factor
+      properties:
+        text:
+          type: string
+          description: text to encrypt
+          minLength: 1
+          maxLength: 100
+          pattern: ^[a-zA-Z\-]+$
+          example: 'middle-Outz'
+        rotation_factor:
+          type: integer
+          format: int32
+          description: rotation factor
+          minimum: 0
+          maximum: 26
+          example: '2'
+
+    sendResponseCaesarCipherList:
+      type: object
+      additionalProperties: false
+      properties:
+        total_page:
+          type: integer
+          format: int32
+          description: total page
+          example: '2'
+        total_element:
+          type: integer
+          format: int32
+          description: total elements
+          example: '2'
+        caesar_cipher:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaesarCipher'
+
+    CaesarCipher:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: id
+          example: '2'
+        message_cipher:
+          type: string
+          description: text encrypt
+          minLength: 1
+          maxLength: 100
+          example: 'okffng-Qwvb'
+        message:
+          type: string
+          description: text encrypt
+          minLength: 1
+          maxLength: 100
+          example: 'okffng-Qwvb'
+        rotation_factor:
+          type: integer
+          format: int32
+          description: rotation factor
+          minimum: 0
+          maximum: 26
+          example: '2'
+
+    SendResponseCaesarCipher:
+      type: object
+      additionalProperties: false
+      properties:
+        text:
+          type: string
+          description: text encrypt
+          minLength: 1
+          maxLength: 100
+          example: 'okffng-Qwvb'
+    EmptyDataResponse:
+      required:
+        - message
+        - code
+      type: object
+      properties:
+        message:
+          type: string
+          description: Description error
+          example: 'error 400'
+        code:
+          type: string
+          description: code error
+          example: '400'
+
+  parameters:
+    TraceId:
+      name: x-b3-traceid
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Correlation ID
+      example: 421777de3d81
+  examples:
+    EmptyDataResponseExample:
+      value:
+        message: "error 400"
+        code: '400'
+    SendRequestCaesarCipherExample:
+      value:
+        text: middle-Outz
+        rotation_factor: 2
+    SendResponseCaesarCipherExample:
+      value:
+        text: okffng-Qwvb
+    sendResponseCaesarCipherListExample:
+      value:
+        total: 2
+        caesar_cipher:
+          [
+            {id: 2,
+             message: okffng-Qwvb,
+             rotation_factor: 2},
+            {id: 2,
+             message: okffng-Qwvb,
+             rotation_factor: 2}
+          ]
