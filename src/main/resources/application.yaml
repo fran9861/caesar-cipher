@@ -10,8 +10,8 @@ spring:
     defaultSchema: test
   datasource:
     url: "jdbc:postgresql://caesar-cipher.postgres.database.azure.com:5432/caesar-cipher"
-    username: "b8af9b269319" //No pude cargarlos a los secret de azure
-    password: "c728155f@" //No pude cargarlos a los secret de azure
+    username: "b8af9b269319" #No pude cargarlos a los secret de azure
+    password: "c728155f@" #No pude cargarlos a los secret de azure
   jpa:
     show-sql: true
     properties:
