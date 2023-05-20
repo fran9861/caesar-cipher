@@ -3,9 +3,21 @@ plugins {
 	id 'org.springframework.boot' version '2.7.12'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id "org.openapi.generator" version "5.4.0"
+	id "jacoco"
 }
 apply plugin: 'java'
-apply plugin: 'jacoco'
+
+test {
+	finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+}
+
+jacoco {
+	toolVersion = "0.8.8"
+	reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
 
 group = 'com.caesar.cipher'
 version = '0.0.1-SNAPSHOT'
@@ -51,57 +63,56 @@ dependencyManagement {
 
 test {
 	useJUnitPlatform()
-}
 
-jacocoTestReport {
-	reports {
-		xml.enabled = true
-		html.enabled = true
-		csv.enabled = false
+	jacocoTestReport {
+		reports {
+			xml.required = false
+			csv.required = false
+			html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+		}
+		afterEvaluate {
+			classDirectories.setFrom(files(classDirectories.files.collect {
+				fileTree(dir: it, exclude: [
+						'**/*Application.class',
+						'**/crosscutting/*',
+						'**/crosscutting/**/',
+						'**/configuration/*',
+						'**/configuration/**/',
+						'**/exception/*',
+						'**/exception/**/',
+						'**/openapi/**/*',
+						'**/openapi/*'
+				])
+			}))
+		}
 	}
-	afterEvaluate {
-		classDirectories.from = files(classDirectories.files.collect{
-			fileTree(dir: it,
-					exclude: [
-					        '**/*Application.class',
-							'**/crosscutting/*',
-							'**/crosscutting/**/',
-							'**/configuration/*',
-							'**/configuration/**/',
-							'**/exception/*',
-							'**/exception/**/',
-							'**/openapi/**/*',
-							'**/openapi/*'
-					]
-			)
-		})
-	}
-	}
-jacocoTestCoverageVerification {
-	violationRules {
-		rule {
-			element = 'CLASS'
-			excludes = [
-					'**.*Application*',
-					'**.crosscutting.*',
-					'**.crosscutting.**.',
-					'**.configuration.*',
-					'**.configuration.**.',
-					'**.exception.*',
-					'**.exception.**.',
-					'**.openapi.**.*',
-					'**.openapi.*'
-			]
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.70
+
+	jacocoTestCoverageVerification {
+		violationRules {
+			rule {
+				element = 'CLASS'
+				excludes = [
+						'**.*Application*',
+						'**.crosscutting.*',
+						'**.crosscutting.**.',
+						'**.configuration.*',
+						'**.configuration.**.',
+						'**.exception.*',
+						'**.exception.**.',
+						'**.openapi.**.*',
+						'**.openapi.*'
+				]
+				limit {
+					counter = 'LINE'
+					value = 'COVEREDRATIO'
+					minimum = 0.70
+				}
 			}
 		}
 	}
-}
 
-check.dependsOn jacocoTestCoverageVerification
+	check.dependsOn jacocoTestCoverageVerification
+}
 
 test.finalizedBy jacocoTestReport
 
