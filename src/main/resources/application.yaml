@@ -1,5 +1,5 @@
 server:
-  port: 8091
+  port: 8080
 spring:
   application:
     name: CaesarCipher
@@ -9,9 +9,9 @@ spring:
     baselineVersion: 1.0
     defaultSchema: test
   datasource:
-    url: "jdbc:postgresql://localhost:5433/test"
-    username: "user_test"
-    password: "12345"
+    url: ${URL_DATA_BASE}
+    username: ${USER_DATA_BASE}
+    password: $(PASS_DATA_BASE)
   jpa:
     show-sql: true
     properties:

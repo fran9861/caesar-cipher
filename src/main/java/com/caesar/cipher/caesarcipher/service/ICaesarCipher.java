@@ -5,8 +5,6 @@ import com.caesar.cipher.caesarcipher.openapi.model.SendResponseCaesarCipherList
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 
 @Service
 public interface ICaesarCipher {
